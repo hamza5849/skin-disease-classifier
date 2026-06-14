@@ -50,8 +50,6 @@ Architecture: Custom Convolutional Neural Network with three convolutional block
 Input size: 64x64 RGB images
 Training data: HAM10000 dataset (10,015 images)
 Validation accuracy: approximately 75 percent
-
-
 Running Locally
 
 
@@ -85,9 +83,7 @@ Open a browser and go to
 
 
 http://127.0.0.1:5000
-
 Project Structure
-
 skin-disease-classifier/
 ├── model/
 │   └── skin_disease_model.h5
@@ -101,11 +97,10 @@ skin-disease-classifier/
 ├── app.py
 ├── requirements.txt
 └── runtime.txt
-
 Dataset
 
 This project uses the HAM10000 (Human Against Machine with 10000 training images) dataset, a collection of dermatoscopic images of common pigmented skin lesions.
 
 Disclaimer
 
-This application is intended for educational and demonstration purposes only. It is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified dermatologist or healthcare provider for any concerns regarding skin conditions.
+This application is intended for educational and demonstration purposes only. It is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified dermatologist or healthcare provider for any concerns regarding skin conditions
