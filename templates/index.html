@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkinAI - Skin Disease Detector</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="circle c1"></div>
+        <div class="circle c2"></div>
+        <div class="circle c3"></div>
+        <div class="circle c4"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fas fa-dna"></i>
+            <span>SkinAI</span>
+        </div>
+        <div class="nav-links">
+            <a href="#home">Home</a>
+            <a href="#about">About</a>
+            <a href="#diseases">Diseases</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <div class="badge"> AI Powered Detection</div>
+            <h1>Skin Disease <span class="gradient-text">Detection</span><br>Using Deep Learning</h1>
+            <p>Upload a skin lesion image and get instant AI-powered analysis across 7 disease categories with confidence scores.</p>
+            <a href="#detector" class="btn-primary">
+                <i class="fas fa-microscope"></i> Start Detection
+            </a>
+        </div>
+        <div class="hero-image">
+            <div class="floating-card card1">
+                <i class="fas fa-check-circle"></i> 7 Disease Classes
+            </div>
+            <div class="floating-card card2">
+                <i class="fas fa-brain"></i> Deep Learning CNN
+            </div>
+            <div class="floating-card card3">
+                <i class="fas fa-bolt"></i> Instant Results
+            </div>
+            <div class="hero-circle">
+                <i class="fas fa-heartbeat"></i>
+            </div>
+        </div>
+    </section>
+
+    <!-- Detector Section -->
+    <section class="detector" id="detector">
+        <div class="section-title">
+            <h2>Upload & <span class="gradient-text">Analyze</span></h2>
+            <p>Upload a clear image of the skin lesion for AI analysis</p>
+        </div>
+
+        <div class="detector-container">
+            <!-- Upload Box -->
+            <div class="upload-box" id="uploadBox">
+                <div class="upload-content" id="uploadContent">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <h3>Drag & Drop Image</h3>
+                    <p>or click to browse files</p>
+                    <span class="file-types">PNG, JPG, JPEG supported</span>
+                    <input type="file" id="fileInput" accept="image/*" hidden>
+                    <button class="btn-upload" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-folder-open"></i> Browse Files
+                    </button>
+                </div>
+                <div class="preview-content" id="previewContent" style="display:none;">
+                    <img id="previewImg" src="" alt="Preview">
+                    <button class="btn-change" onclick="resetUpload()">
+                        <i class="fas fa-redo"></i> Change Image
+                    </button>
+                    <button class="btn-analyze" onclick="analyzeImage()">
+                        <i class="fas fa-search"></i> Analyze Now
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results Box -->
+            <div class="results-box" id="resultsBox">
+                <div class="results-placeholder" id="resultsPlaceholder">
+                    <i class="fas fa-chart-pie"></i>
+                    <p>Results will appear here after analysis</p>
+                </div>
+
+                <div class="results-content" id="resultsContent" style="display:none;">
+                    <div class="result-header">
+                        <div class="result-badge" id="resultBadge"></div>
+                        <h3 id="resultDisease"></h3>
+                        <div class="confidence-ring">
+                            <svg viewBox="0 0 120 120">
+                                <circle cx="60" cy="60" r="54" fill="none" stroke="#1a1a2e" stroke-width="8"/>
+                                <circle cx="60" cy="60" r="54" fill="none" stroke="url(#gradient)" stroke-width="8"
+                                    stroke-dasharray="339.3" stroke-dashoffset="339.3"
+                                    stroke-linecap="round" id="confidenceCircle" transform="rotate(-90 60 60)"/>
+                                <defs>
+                                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" style="stop-color:#6c63ff"/>
+                                        <stop offset="100%" style="stop-color:#48d1cc"/>
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <div class="confidence-text">
+                                <span id="confidenceValue">0%</span>
+                                <small>Confidence</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="result-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Risk Level</span>
+                            <span class="detail-value risk" id="resultRisk"></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Category</span>
+                            <span class="detail-value" id="resultShort"></span>
+                        </div>
+                    </div>
+
+                    <div class="all-predictions">
+                        <h4>All Predictions</h4>
+                        <div id="predictionBars"></div>
+                    </div>
+
+                    <div class="disclaimer">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        For educational purposes only. Consult a dermatologist for medical advice.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay" style="display:none;">
+            <div class="loading-box">
+                <div class="dna-loader">
+                    <div class="strand"></div>
+                    <div class="strand"></div>
+                </div>
+                <p>Analyzing image with AI...</p>
+                <span>Please wait</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Diseases Section -->
+    <section class="diseases" id="diseases">
+        <div class="section-title">
+            <h2>Detectable <span class="gradient-text">Diseases</span></h2>
+            <p>Our AI can identify 7 types of skin conditions</p>
+        </div>
+        <div class="diseases-grid">
+            <div class="disease-card">
+                <div class="disease-icon" style="background: linear-gradient(135deg, #ff6b6b, #ee5a24);">
+                    <i class="fas fa-virus"></i>
+                </div>
+                <h4>Melanoma</h4>
+                <p>Malignant skin cancer arising from melanocytes</p>
+                <span class="risk-tag high">Very High Risk</span>
+            </div>
+            <div class="disease-card">
+                <div class="disease-icon" style="background: linear-gradient(135deg, #f9ca24, #f0932b);">
+                    <i class="fas fa-allergies"></i>
+                </div>
+                <h4>Basal Cell Carcinoma</h4>
+                <p>Most common type of skin cancer</p>
+                <span class="risk-tag high">High Risk</span>
+            </div>
+            <div class="disease-card">
+                <div class="disease-icon" style="background: linear-gradient(135deg, #6c63ff, #48d1cc);">
+                    <i class="fas fa-sun"></i>
+                </div>
+                <h4>Actinic Keratosis</h4>
+                <p>Rough scaly patch from sun damage</p>
+                <span class="risk-tag medium">High Risk</span>
+            </div>
+            <div class="disease-card">
+                <div class="disease-icon" style="background: linear-gradient(135deg, #00b894, #00cec9);">
+                    <i class="fas fa-leaf"></i>
+                </div>
+                <h4>Benign Keratosis</h4>
+                <p>Non-cancerous skin growths</p>
+                <span class="risk-tag low">Low Risk</span>
+            </div>
+            <div class="disease-card">
+                <div class="disease-icon" style="background: linear-gradient(135deg, #a29bfe, #6c5ce7);">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h4>Dermatofibroma</h4>
+                <p>Benign fibrous skin nodule</p>
+                <span class="risk-tag low">Low Risk</span>
+            </div>
+            <div class="disease-card">
+                <div class="disease-icon" style="background: linear-gradient(135deg, #fd79a8, #e84393);">
+                    <i class="fas fa-circle"></i>
+                </div>
+                <h4>Melanocytic Nevi</h4>
+                <p>Common moles on the skin</p>
+                <span class="risk-tag low">Low Risk</span>
+            </div>
+            <div class="disease-card">
+                <div class="disease-icon" style="background: linear-gradient(135deg, #55efc4, #00b894);">
+                    <i class="fas fa-tint"></i>
+                </div>
+                <h4>Vascular Lesion</h4>
+                <p>Abnormalities of blood vessels</p>
+                <span class="risk-tag medium">Medium Risk</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about" id="about">
+        <div class="about-content">
+            <h2>About This <span class="gradient-text">Project</span></h2>
+            <p>This AI-powered skin disease detection system is built using a Convolutional Neural Network (CNN) trained on the HAM10000 dataset containing over 10,000 dermatoscopic images.</p>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>10,000+</h3>
+                    <p>Training Images</p>
+                </div>
+                <div class="stat-card">
+                    <h3>7</h3>
+                    <p>Disease Classes</p>
+                </div>
+                <div class="stat-card">
+                    <h3>CNN</h3>
+                    <p>Deep Learning Model</p>
+                </div>
+                <div class="stat-card">
+                    <h3>HAM10000</h3>
+                    <p>Dataset Used</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <i class="fas fa-dna"></i>
+                <span>SkinAI</span>
+            </div>
+            <p>Built with ❤️ using TensorFlow, Flask & Deep Learning</p>
+            <p class="disclaimer-footer">⚠️ For educational purposes only. Not a substitute for professional medical advice.</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
